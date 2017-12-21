@@ -2,6 +2,7 @@ $goodServer = "http://some.octopusserver.com"
 $goodKey = "API-1234567890123456"
 
 $commonParams = @{ Server = $goodServer; APIKey = $goodKey }
+$goodParams = @{}
 
 $goodTenant = "Tenants-1234"
 $goodProject = "Projects-1234"
@@ -12,17 +13,15 @@ function Test-StandardParameters {
 		Test-ParamMandatoryAttrib
 
 		Test-Function @commonParams @goodParams
-		$assertParams = @{ Scope = "Context" }
+		$assertParams = @{ CommandName = "Invoke-RestMethod"; Scope = "Context" }
 
-		It "Passes the value of the Server parameter" {
-			$assertParams.CommandName = "Invoke-RestMethod"
-			$assertParams.ParameterFilter = { $Uri -like "$goodServer/*" }
-			Assert-MockCalled @assertParams
-		}
-		
-		It "Passes the value of the APIKey parameter" {
-			$assertParams.CommandName = "Invoke-RestMethod"
-			$assertParams.ParameterFilter = { $Headers.'X-Octopus-ApiKey' -eq $goodKey }
+		$parseCases = @()
+		$parseCases += @{ Parameter = "Server"; Count = 1; Filter = { $Uri -like "$goodServer*" } }
+		$parseCases += @{ Parameter = "APIKey"; Count = 1; Filter = { $Headers.'X-Octopus-ApiKey' -eq $goodKey } }
+
+		It "Passes the value of the <Parameter> parameter" -TestCases $parseCases {
+			Param( $Parameter, $Count, $Filter )
+			$assertParams.ParameterFilter = $Filter
 			Assert-MockCalled @assertParams
 		}
 	}
