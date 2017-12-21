@@ -53,7 +53,7 @@ function Test-IdParameter {
 }
 
 function Test-ParamMandatoryAttrib {
-	foreach ( $mandatory in $goodParams.Keys ) {
+	foreach ( $mandatory in ( $goodParams.Keys + $commonParams.Keys ) ) {
 		It "the Mandatory attribute for the $mandatory parameter is $true" {
 			( Get-Command -Name $functionName ).Parameters."$mandatory".ParameterSets.__AllParameterSets.IsMandatory | Should Be $true
 		}
