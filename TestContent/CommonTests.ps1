@@ -28,6 +28,31 @@ function Test-StandardParameters {
 	}
 }
 
+function Test-IdParameter {
+	Param(
+		[Parameter(Mandatory = $true)]
+		[string]$Stub,
+
+		[Parameter(Mandatory = $true)]
+		[string]$Id
+	)
+	Context "Id Parameter implementation" {
+		$assertParams = @{ CommandName = "Invoke-RestMethod"; Times = 1; Scope = "It"; Exactly = [switch]$true }
+
+		It "Passes 'all' if Id parameter is not specified" {
+			$assertParams.ParameterFilter = { $Uri -like "*$stub/all" }
+			Test-Function @commonParams
+			Assert-MockCalled @assertParams
+		}
+	
+		It "Passes the value of the Id parameter if specified" {
+			$assertParams.ParameterFilter = { $Uri -like "*$stub/$Id" }
+			Test-Function @commonParams -Id $Id
+			Assert-MockCalled @assertParams
+		}
+	}
+}
+
 function Test-ParamMandatoryAttrib {
 	foreach ( $mandatory in $goodParams.Keys ) {
 		It "the Mandatory attribute for the $mandatory parameter is $true" {
