@@ -1,4 +1,4 @@
-﻿function Add-OctoTenantToProject {
+﻿function Add-TenantToProject {
 	<#
 		.SYNOPSIS
 			Associates a tenant with a project and environment on an Octopus Deploy server.
